@@ -11,8 +11,21 @@ public class MemberService {
 
     // @RequiredArgsConstructor 어노테이션으로 생성자 주입을 받아야한다.
     private final MemberRepository memberRepository;
-
+    
+    // 회원가입    
     public int register(MemberDto memberDto) {
         return memberRepository.register(memberDto);
+    }
+    
+    // 이메일 중복 체크
+    public String findId(String userId) {
+        MemberDto memberDto = memberRepository.findByUserId(userId);
+
+        if (memberDto == null) {
+            return "success";
+        } else {
+            return "fail";
+        }
+
     }
 }

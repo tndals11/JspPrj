@@ -24,8 +24,6 @@ public class MemberController {
         return "login";
     }
 
-
-
     // 회원가입
     @GetMapping("/register")
     public String registerForm() {
@@ -37,11 +35,9 @@ public class MemberController {
     // Ajax를 사용할 때 추가해줘야함
     @ResponseBody
     public String register(@RequestBody MemberDto memberDto) {
-        Map<String, Object> map = new HashMap<>();
         int saveResult = memberService.register(memberDto);
 
         String msg = "";
-
         if (saveResult > 0) {
             msg = "success";
         } else {
@@ -49,5 +45,14 @@ public class MemberController {
         }
         return msg;
     }
+
+    // 이메일 중복체크
+    @PostMapping("/checkId")
+    @ResponseBody
+    public String checkId(@RequestParam String userId) {
+        String checkUserId = memberService.findId(userId);
+        return checkUserId;
+    }
+
 
 }

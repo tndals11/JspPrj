@@ -61,10 +61,10 @@ header {
   /* body img*/
   main {
     height: 100vh;
-    background-image: url("${pageContext.request.contextPath}/resources/images/snslogo.jpg");
+    background-image: url("${pageContext.request.contextPath}/resources/images/waifu2x_art_noise3_scale.png");
     background-repeat: no-repeat;
     background-size: cover;
-    background-position: bottom;
+    background-position: center;
   }
 
   body {

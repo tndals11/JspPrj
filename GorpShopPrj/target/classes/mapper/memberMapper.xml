@@ -7,4 +7,7 @@
         insert into member_table(userId, userPw, userName, tel1, tel2, tel3, postcode, address, detailAddress, extraAddress, userst, regdate, enddate)
         values (#{userId}, #{userPw}, #{userName}, #{tel1}, #{tel2}, #{tel3}, #{postcode}, #{address}, #{detailAddress}, #{extraAddress}, '00', NOW(), NOW() )
     </insert>
+    <select id="findByUserId" parameterType="String" resultType="member">
+        select * from member_table where userId = #{userId};
+    </select>
 </mapper>

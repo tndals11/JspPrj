@@ -12,10 +12,13 @@ public class MemberRepository {
 
     private final SqlSessionTemplate sql;
 
-    public int register(@RequestBody MemberDto memberDto) {
-        // member의 값이 제대로 들어오는지 확인하기 위해서 사용
-        System.out.println("================================== Repository");
+    public int register(MemberDto memberDto) {
         // sql문으로 넘겨준다
         return sql.insert("Member.register", memberDto);
+    }
+
+
+    public MemberDto findByUserId(String userId) {
+        return sql.selectOne("Member.findByUserId", userId);
     }
 }

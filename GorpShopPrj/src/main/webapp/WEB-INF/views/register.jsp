@@ -193,10 +193,14 @@
     </footer>
 </body>
 <script>
+
+
 function checkFrom() {
   let checkEmail = RegExp(/^([a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/);
   let checkPW = RegExp(/^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[~!@#$%^&*()_+])[A-Za-z\d~!@#$%^&*()_+]{8,}$/);
   let checkName = RegExp(/^[가-힣]|[A-Z]|[a-z]$/);
+  const email = document.getElementById("userId").value;
+  const check_userId = document.getElementById("check_userId");
   // 이메일
   $("#userId").blur( function() {
     if($("#userId").val() == "" || $("#userId").val() === "") {
@@ -206,8 +210,21 @@ function checkFrom() {
       $("#userId").css("border-color", "red");
       $("#check_userId").text("올바르지않은 형식입니다.").css("color", "red");
     } else {
-      $("#userId").css("border-color", "green");
-      $("#check_userId").text("사용가능한 이메일입니다.").css("color", "green");
+        $.ajax({
+            type: "post",
+            url:"/member/checkId",
+            data: {userId : userId.value},
+            dataType: "text",
+            success: function(msg) {
+                if (msg.trim() === "success") {
+                    $("#userId").css("border-color", "green");
+                    $("#check_userId").text("사용 가능한 이메일입니다.").css("color", "green");
+                } else  {
+                    $("#userId").css("border-color", "red");
+                    $("#check_userId").text("이미 사용중인 이메일입니다.").css("color", "red");
+                }
+            }
+        });
     }
   });
 
@@ -258,9 +275,7 @@ function checkFrom() {
       $("#check_tel").text("휴대전화를 입력해주세요.").css("color", "red");
     } else if ( $("#tel2").val().length != 4 ) {
       $("#check_tel").text("중간번호 4자리를 입력해주세요.").css("color", "red");
-
     }
-
   });
 
   // 전화번호3
@@ -274,40 +289,41 @@ function checkFrom() {
 
 }
 checkFrom()
+ $("#btn").click(function () {
+    if ( $("#userId").val() == "" || $("#userPw").val() == "" || $("#userName").val() == "" || $("#tel1").val() == "" || $("#tel2").val() == "" || $("#tel3").val() == "" ) {
+        alert("공백을 입력하세요.");
+    } else {
+         let obj = {
+               userId: userId.value,
+               userPw: userPw.value,
+               userName: userName.value,
+               tel1: tel1.value,
+               tel2: tel2.value,
+               tel3: tel3.value,
+               postcode: postcode.value,
+               address: address.value,
+               detailAddress: detailAddress.value,
+               extraAddress: extraAddress.value
+             };
 
-
-  $("#btn").click(function () {
-
-    let obj = {
-      userId: userId.value,
-      userPw: userPw.value,
-      userName: userName.value,
-      tel1: tel1.value,
-      tel2: tel2.value,
-      tel3: tel3.value,
-      postcode: postcode.value,
-      address: address.value,
-      detailAddress: detailAddress.value,
-      extraAddress: extraAddress.value
-    };
-
-   $.ajax({
-     type: "post",
-     url: "/member/register",
-     contentType: "application/json",
-     dataType: "json",
-     data: JSON.stringify(obj),
-     success: function(msg) {
-       console.log(msg); // 확인용 로그
-       if (msg == "success") {
-         window.location.href = "/member/login";
-       } else {
-         window.location.href = "/member/register";
-       }
-     }
-   });
-
-  });
+             $.ajax({
+               type: "post",
+               url: "/member/register",
+               contentType: "application/json",
+               dataType: "text", // 수정: "json" 대신 "text"
+               data: JSON.stringify(obj),
+               success: function(msg) {
+                 if (msg.trim() === "success") { // 수정: 문자열 trim() 처리 및 비교 연산자 수정
+                   alert("회원가입이 완료되었습니다.");
+                   window.location.href = "/member/login";
+                 } else {
+                   alert("다시 확인해주세요.");
+                   window.location.href = "/member/register";
+                 }
+               }
+             });
+    }
+ });
 
 </script>
 <script src="${pageContext.request.contextPath}/resources/js/popup_2.js"></script>
