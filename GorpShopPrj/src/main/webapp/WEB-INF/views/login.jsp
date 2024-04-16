@@ -5,12 +5,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+
    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css">
    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/bar.css">
    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/footer.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src = "https://developers.kakao.com/sdk/js/kakao.min.js"></script>
 </head>
 <style>
 
@@ -129,9 +132,16 @@
     color: black;
     margin-left: 7px;
  }
+    #kakao-login-btn {
+        cursor: pointer;
+    }
 
+    #kakaoLogout {
+        cursor: pointer;
+    }
 </style>
 <body>
+
   <header>
     <nav>
       <div class="bar_container">
@@ -150,6 +160,7 @@
             <ul>
               <a href="contact.html"><li>Contact</li></a>
               <a href="login.html"><li>Login</li></a>
+              <a style="cursor: pointer;" onclick="kakaoLogout()">카카오 로그아웃</a>
               <a href="#"><li>Cart(0)</li></a>
             </ul>
           </div>
@@ -161,14 +172,14 @@
       <div class="login_wrap">
         <h2>로그인</h2>
         <form method="post" action="/member/login" id="login_form">
-          <input type="text" name="userid" placeholder="이메일">
-          <input type="password" name="userpw" placeholder="비밀번호">
+          <input type="text" name="userId" placeholder="이메일">
+          <input type="password" name="userPw" placeholder="비밀번호">
           <label for="remember-check">
                 <input type="checkbox" id="remember-check"><span>이메일 저장하기</span>
           </label>
           <a href="findpw.html" class="passwordFind">비밀번호를 잊어버리셨나요?</a>
           <input type="submit" value="로그인">
-          <a href=""><img src="${pageContext.request.contextPath}/resources/images/kakao_login_medium_wide.png" alt="" style="width: 100%;"  ></a>
+          <a id="kakao-login-btn"><img src="${pageContext.request.contextPath}/resources/images/kakao_login_medium_wide.png" alt="" style="width: 100%;"  ></a>
           <div class="register">
             <span >GORP SHOP에 회원가입 하시겠습니까? <a href="/member/register">회원가입</a></span>
           </div>
@@ -209,4 +220,51 @@
     </div>
   </footer>
 </body>
+<script type='text/javascript'>
+Kakao.init('23a2d97f65c1f4dea1a19cd13d0759c1');
+$("#kakao-login-btn").on("click", function(){
+    //1. 로그인 시도
+    Kakao.Auth.login({
+        success: function(authObj) {
+
+          //2. 로그인 성공시, API 호출
+          Kakao.API.request({
+            url: '/v2/user/me',
+            success: function(res) {
+              console.log(res);
+              var id = res.id;
+			  scope : 'account_email';
+			alert('로그인성공');
+              location.href="/";
+        }
+          })
+          console.log(authObj);
+          var token = authObj.access_token;
+        },
+        fail: function(err) {
+          alert(JSON.stringify(err));
+        }
+      });
+})
+</script>
+
+<script type="text/javascript">
+		function kakaoLogout() {
+
+			if (!Kakao.Auth.getAccessToken()) {
+			  console.log('Not logged in.');	//이지 로그아웃 되어있음
+			  return;
+			}
+			Kakao.Auth.logout(function(response) {
+                if(response == true){
+                    Kakao.Auth.setAccessToken(undefined);	//토큰 제거
+                    sessionStorage.clear();					//세션 제거
+                    localStorage.clear();					//로컬스토리지 제거
+                } else {
+                    alert("잘못된 정보입니다. 관리자에 문의해 주시기 바랍니다.");
+                }
+			});
+	  	}
+</script>
+
 </html>
