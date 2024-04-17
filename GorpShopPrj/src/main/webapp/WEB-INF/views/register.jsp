@@ -289,6 +289,7 @@ function checkFrom() {
 
 }
 checkFrom()
+
  $("#btn").click(function () {
     if ( $("#userId").val() == "" || $("#userPw").val() == "" || $("#userName").val() == "" || $("#tel1").val() == "" || $("#tel2").val() == "" || $("#tel3").val() == "" ) {
         alert("공백을 입력하세요.");

@@ -28,4 +28,14 @@ public class MemberService {
         }
 
     }
+
+    public boolean login(MemberDto memberDto) {
+        MemberDto loginMember = memberRepository.login(memberDto);
+
+        if (loginMember != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

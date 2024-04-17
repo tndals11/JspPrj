@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-  <script src = "https://developers.kakao.com/sdk/js/kakao.min.js"></script>
+
 </head>
 <style>
 
@@ -54,7 +54,7 @@
     border: 1px solid #eee;
   }
 
-  #login_form > input[type="submit"] {
+  #login_btn {
     border: 0;
     margin-top: 20px;
     font-size: 18px;
@@ -141,7 +141,6 @@
     }
 </style>
 <body>
-
   <header>
     <nav>
       <div class="bar_container">
@@ -160,7 +159,7 @@
             <ul>
               <a href="contact.html"><li>Contact</li></a>
               <a href="login.html"><li>Login</li></a>
-              <a style="cursor: pointer;" onclick="kakaoLogout()">카카오 로그아웃</a>
+              <a href="javascript:kakaoLogout();" style="cursor: pointer;" >카카오 로그아웃</a>
               <a href="#"><li>Cart(0)</li></a>
             </ul>
           </div>
@@ -171,15 +170,15 @@
     <div class="login_container">
       <div class="login_wrap">
         <h2>로그인</h2>
-        <form method="post" action="/member/login" id="login_form">
-          <input type="text" name="userId" placeholder="이메일">
-          <input type="password" name="userPw" placeholder="비밀번호">
+        <form  id="login_form">
+          <input type="text" id="userId" name="userId" placeholder="이메일">
+          <input type="password" id="userPw" name="userPw" placeholder="비밀번호">
           <label for="remember-check">
                 <input type="checkbox" id="remember-check"><span>이메일 저장하기</span>
           </label>
-          <a href="findpw.html" class="passwordFind">비밀번호를 잊어버리셨나요?</a>
-          <input type="submit" value="로그인">
-          <a id="kakao-login-btn"><img src="${pageContext.request.contextPath}/resources/images/kakao_login_medium_wide.png" alt="" style="width: 100%;"  ></a>
+          <a href="/member/findPw " class="passwordFind">비밀번호를 잊어버리셨나요?</a>
+          <input id="login_btn" type="button" value="로그인">
+          <a href="javascript:kakaoLogin();"><img src="${pageContext.request.contextPath}/resources/images/kakao_login_medium_wide.png" alt="" style="width: 100%;"  ></a>
           <div class="register">
             <span >GORP SHOP에 회원가입 하시겠습니까? <a href="/member/register">회원가입</a></span>
           </div>
@@ -220,51 +219,83 @@
     </div>
   </footer>
 </body>
+<script src = "https://developers.kakao.com/sdk/js/kakao.min.js"></script>
 <script type='text/javascript'>
-Kakao.init('23a2d97f65c1f4dea1a19cd13d0759c1');
-$("#kakao-login-btn").on("click", function(){
-    //1. 로그인 시도
-    Kakao.Auth.login({
+
+// 로그인 값 보내기
+$("#login_btn").click( function () {
+    let userId = document.getElementById("userId");
+    let userPw = document.getElementById("userPw");
+
+    if ( userId.value == "" || userId.value === "" ) {
+        alert("공백을 입력해주세요");
+        userId.value == "";
+        userId.focus();
+
+    } else if ( userPw.value == "" || userPw.value === "" ) {
+        alert("공백을 입력해주세요");
+        userPw.value == "";
+        userPw.focus();
+    }
+
+    let obj = {
+        userId: userId.value,
+        userPw: userPw.value
+    }
+
+    $.ajax({
+                   type: "post",
+                   url: "/member/login",
+                   contentType: "application/json",
+                   dataType: "text",
+                   data: JSON.stringify(obj),
+                   success: function(msg) {
+                     if (msg.trim() === "success") { // 수정: 문자열 trim() 처리 및 비교 연산자 수정
+                       window.location.href = "/";
+                     } else {
+                       alert("아이디 혹은 비밀번호가 일치하지 않습니다.");
+                       window.location.href = "/member/login";
+                     }
+                   }
+                 });
+
+});
+
+window.Kakao.init('23a2d97f65c1f4dea1a19cd13d0759c1');
+
+// 카카오톡 로그인
+function kakaoLogin() {
+    window.Kakao.Auth.login({
+        scope:'profile_nickname, account_email, name, shipping_address',
         success: function(authObj) {
-
-          //2. 로그인 성공시, API 호출
-          Kakao.API.request({
-            url: '/v2/user/me',
-            success: function(res) {
-              console.log(res);
-              var id = res.id;
-			  scope : 'account_email';
-			alert('로그인성공');
-              location.href="/";
-        }
-          })
-          console.log(authObj);
-          var token = authObj.access_token;
-        },
-        fail: function(err) {
-          alert(JSON.stringify(err));
-        }
-      });
-})
-</script>
-
-<script type="text/javascript">
-		function kakaoLogout() {
-
-			if (!Kakao.Auth.getAccessToken()) {
-			  console.log('Not logged in.');	//이지 로그아웃 되어있음
-			  return;
-			}
-			Kakao.Auth.logout(function(response) {
-                if(response == true){
-                    Kakao.Auth.setAccessToken(undefined);	//토큰 제거
-                    sessionStorage.clear();					//세션 제거
-                    localStorage.clear();					//로컬스토리지 제거
-                } else {
-                    alert("잘못된 정보입니다. 관리자에 문의해 주시기 바랍니다.");
+            console.log(authObj);
+            window.Kakao.API.request({
+                url:'/v2/user/me',
+                success: res => {
+                    const kakao_account = res.kakao_account;
+                    console.log(kakao_account);
+                    location.href = "/";
                 }
-			});
-	  	}
-</script>
+            });
+        }
+    });
+}
 
+// 카카오톡 로그아웃
+function kakaoLogout() {
+    if (Kakao.Auth.getAccessToken()) {
+      Kakao.API.request({
+        url: '/v1/user/unlink',
+        success: function (response) {
+        	console.log(response)
+        	alert("이용해주셔서 감사합니다.");
+        },
+        fail: function (error) {
+          console.log(error)
+        },
+      })
+      Kakao.Auth.setAccessToken(undefined)
+    }
+  }
+</script>
 </html>

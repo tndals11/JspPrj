@@ -10,4 +10,7 @@
     <select id="findByUserId" parameterType="String" resultType="member">
         select * from member_table where userId = #{userId};
     </select>
+    <select id="login" parameterType="member" resultType="member">
+        SELECT * FROM member_table where userId = #{userId} AND userPw = #{userPw};
+    </select>
 </mapper>
