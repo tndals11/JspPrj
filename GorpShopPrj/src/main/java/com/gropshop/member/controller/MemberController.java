@@ -4,8 +4,10 @@ import com.gropshop.member.dto.MemberDto;
 import com.gropshop.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,10 +26,27 @@ public class MemberController {
         return "login";
     }
 
+    // 로그인
+    @PostMapping("/login")
+    @ResponseBody
+    public String login(@RequestBody MemberDto memberDto, HttpSession session, Model model) {
+        boolean checkMember = memberService.login(memberDto);
+
+        String msg = "";
+        if (checkMember) {
+            System.out.println("성공");
+            session.setAttribute("loginEmail", memberDto.getUserId());
+            msg = "success";
+        } else {
+            System.out.println("실패");
+            msg = "fail";
+        }
+        return msg;
+    }
+
     // 회원가입
     @GetMapping("/register")
     public String registerForm() {
-
         return "register";
     }
 
@@ -54,5 +73,10 @@ public class MemberController {
         return checkUserId;
     }
 
+    // 비밀번호 찾기
+    @GetMapping("/findPw")
+    public String findPw() {
 
+        return "findPw";
+    }
 }
