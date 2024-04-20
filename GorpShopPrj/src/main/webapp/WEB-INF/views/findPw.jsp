@@ -5,15 +5,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
-
    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/style.css">
    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/bar.css">
    <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/footer.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 </head>
 <style>
 
@@ -44,6 +42,16 @@
     .login_wrap h2 {
       font-size: 24px;
       text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #register_form > input {
+      width: 100%;
+      height: 48px;
+      padding: 0 10px;
+      box-sizing: border-box;
+      border: 0px;
+      border: 1px solid #eee;
       margin-bottom: 20px;
     }
 
@@ -98,6 +106,54 @@
       margin-top: 5px;
       margin-bottom: 15px;
     }
+
+
+
+  #tel {
+    width: 100%;
+    height: 48px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    border: 0px;
+    border: 1px solid #eee;
+    margin-bottom: 20px;
+  }
+
+  #phone2 {
+    width: 100%;
+    height: 48px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    border: 0px;
+    border: 1px solid #eee;
+    margin-bottom: 20px;
+  }
+
+  #phone_button {
+    position: relative;
+  }
+
+  #phone_button button {
+  position: absolute;
+  width: 50px;
+  height: 30px;
+  top: 0;
+  bottom: 20px;
+  right: 5px;
+  margin: auto 0;
+  border-radius: 3px;
+  cursor: pointer;
+  border: none;
+  border: 1px solid #eee;
+  font-family: "Roboto", sans-serif;
+  font-weight: bold;
+  background-color: white;
+}
+
+#phone_button button:hover {
+  background-color: black;
+  color: white;
+}
 
   /* footer */
   .footer-container {
@@ -179,20 +235,18 @@
      <div class="login_container">
        <div class="login_wrap">
          <h2>비밀번호 찾기</h2>
-         <form method="post" action="" id="register_form">
-           <input type="text" name="userId" placeholder="이메일">
-           <input type="text" name="userName" placeholder="이름">
-           <select id="tel1" title="모바일 앞자리">
-             <option value="010">010</option>
-             <option value="011">011</option>
-             <option value="016">016</option>
-             <option value="017">017</option>
-             <option value="018">018</option>
-             <option value="019">019</option>
-           </select> -
-           <input type='tel' id="tel2" name='tel2' style="width: 31.8%;" maxlength="4" placeholder="휴대전화">-
-           <input type='tel' id="tel3" name='tel3' style="width: 31.8%;" maxlength="4">
-           <input id="findPw_btn" type="submit" value="확인">
+         <form  id="register_form">
+           <input type="text" id="userId" placeholder="이메일">
+           <input type="text" id="userName"  placeholder="이름">
+           <div id="phone_button">
+            <input type="text" id="tel" maxlength="12" placeholder="휴대전화">
+            <button id="phone_check">인증</button>
+          </div>
+           <div id="phone_button">
+            <input type="text" id="phone2" placeholder="인증번호 입력해주세요">
+            <button id="code_check">확인</button>
+           </div>
+           <input id="findPw_btn" type="button" value="확인">
          </form>
        </div>
      </div>
@@ -230,7 +284,75 @@
     </div>
   </footer>
 </body>
+<script>
 
+    $(function () {
+        let tel = document.getElementById("tel");
+        let userId = document.getElementById("userId");
+        let userName = document.getElementById("userName");
+        var code2 = "";
 
+        $("#findPw_btn").click( function() {
+            if ( userId.value == "" ) {
+                alert("공백을 입력해주세요.");
+                userId.value == "";
+                userId.focus();
+            } else if ( userName.value == "" ) {
+                alert("공백을 입력해주세요.");
+                userName.value == "";
+                userName.focus();
+            } else {
+                alert("공백을 입력해주세요.");
+                tel.value == "";
+                tel.focus();
+            }
+        });
+
+       $("#phone_check").click(function(e) {
+           e.preventDefault();
+           var tel = $("#tel").val();
+
+           if (tel.value == "") {
+               alert("공백을 입력하세요");
+           } else {
+               alert("인증번호를 전송하였습니다.\n휴대폰에서 인증번호를 확인 해주세요.");
+
+               alert(tel);
+               $.ajax({
+                   type: "POST",
+                   url: "/member/sendSMS1.do",
+                   data: {
+                       phoneNumber: tel
+                   },
+                   cache: false,
+                   success: function(data) {
+                       if (data == "success") {
+                           alert("인증번호가 전송되었습니다.");
+
+                           // 인증번호 확인 클릭 이벤트 핸들러 함수 내에서 직접 처리
+                           $("#code_check").click(function(e) {
+                               e.preventDefault();
+
+                               var enteredCode = $("#phone2").val();
+                               if (enteredCode == data) {
+                                   alert("인증성공");
+                                   $("#phone2").css("border-color", "green");
+                                   $("#phone2").attr("disabled", true);
+                               } else {
+                                   alert("인증실패\n 인증번호를 다시 확인해주세요.");
+                                   $("#phone2").css("border-color", "red");
+                                   $("#phone2").val("");
+                                   $("#phone2").focus();
+                               }
+                           });
+                       } else {
+                           alert("휴대폰 번호가 올바르지 않습니다.");
+                       }
+                   }
+               });
+           }
+       });
+
+    });
 </script>
 </html>
