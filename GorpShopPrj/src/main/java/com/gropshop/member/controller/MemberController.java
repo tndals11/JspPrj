@@ -1,6 +1,7 @@
 package com.gropshop.member.controller;
 
 import com.gropshop.member.dto.MemberDto;
+import com.gropshop.member.service.CoolsmsService;
 import com.gropshop.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -8,8 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Random;
 
 @Controller
 //@RequestMapping member 공통주소로 묶는다
@@ -18,6 +18,8 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+    private final CoolsmsService coolsmsService;
+
 
     // 로그인
     @GetMapping("/login")
@@ -78,5 +80,25 @@ public class MemberController {
     public String findPw() {
 
         return "findPw";
+    }
+
+    @RequestMapping("/sendSMS1.do")
+    @ResponseBody
+    public String sendSMS(String phoneNumber) {
+        System.out.println(phoneNumber);
+
+        //랜덤 숫자를 생성
+        Random ramNum = new Random();
+        String numStr = "";
+        for ( int i = 0; i < 6; i++) {
+            String ran = Integer.toString(ramNum.nextInt(10));
+        //문자열로 담아준다
+            numStr += ran;
+        }
+        // api 사용하기 위함
+        coolsmsService.certifiedPhoneNumber(phoneNumber,numStr);
+
+        System.out.println(numStr);
+        return numStr;
     }
 }

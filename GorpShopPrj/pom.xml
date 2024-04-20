@@ -135,12 +135,21 @@
       <artifactId>jackson-core</artifactId>
       <version>2.9.2</version>
     </dependency>
+
+    <!-- sdk 의존성 -->
     <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.11</version>
-      <scope>test</scope>
+      <groupId>net.nurigo</groupId>
+      <artifactId>sdk</artifactId>
+      <version>4.3.0</version> <!-- 여기에 원하는 버전을 입력하세요 -->
     </dependency>
+
+    <!-- javaSDK 의존성 -->
+    <dependency>
+      <groupId>net.nurigo</groupId>
+      <artifactId>javaSDK</artifactId>
+      <version>2.2</version> <!-- 여기에 원하는 버전을 입력하세요 -->
+    </dependency>
+
   </dependencies>
 
   <build>

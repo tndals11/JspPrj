@@ -3,7 +3,14 @@ package com.gropshop.member.service;
 import com.gropshop.member.dto.MemberDto;
 import com.gropshop.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import net.nurigo.java_sdk.Coolsms;
+import net.nurigo.java_sdk.exceptions.CoolsmsException;
+import net.nurigo.sdk.message.model.Message;
+import org.json.simple.JSONObject;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+
 
 @Service
 @RequiredArgsConstructor
@@ -11,7 +18,9 @@ public class MemberService {
 
     // @RequiredArgsConstructor 어노테이션으로 생성자 주입을 받아야한다.
     private final MemberRepository memberRepository;
-    
+
+
+
     // 회원가입    
     public int register(MemberDto memberDto) {
         return memberRepository.register(memberDto);
@@ -38,4 +47,7 @@ public class MemberService {
             return false;
         }
     }
+
+
+
 }
